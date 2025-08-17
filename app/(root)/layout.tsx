@@ -1,3 +1,5 @@
+"use server";
+
 import { ReactNode } from "react";
 import Header from "@/components/Header";
 import { auth } from "@/auth";

@@ -10,6 +10,7 @@ import ratelimit from "@/lib/ratelimit";
 import { redirect } from "next/navigation";
 import { workflowClient } from "@/lib/workflow";
 import config from "@/lib/config";
+import { AuthCredentials } from "@/types";
 
 export const signInWithCredentials = async (
   params: Pick<AuthCredentials, "email" | "password">,

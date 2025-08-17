@@ -5,6 +5,16 @@ import { ReactNode } from "react";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { registerLicense } from "@syncfusion/ej2-base";
+import "@syncfusion/ej2-base/styles/material.css";
+import "@syncfusion/ej2-react-grids/styles/material.css";
+import "@syncfusion/ej2-react-buttons/styles/material.css";
+import "@syncfusion/ej2-react-popups/styles/material.css";
+import "@syncfusion/ej2-buttons/styles/material.css";
+import "@syncfusion/ej2-popups/styles/material.css";
+import "@syncfusion/ej2-splitbuttons/styles/material.css";
+
+registerLicense(process.env.NEXT_SYNCFUSION_LICENSE_KEY!);
 
 const ibmPlexSans = localFont({
   src: [

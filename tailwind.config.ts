@@ -57,6 +57,10 @@ export default {
         primary: {
           DEFAULT: "#E7C9A5",
           admin: "#25388C",
+          50: "#e9f3fb",
+          100: "#256ff1",
+          500: "#175cd3",
+          700: "#6941C6",
         },
         green: {
           DEFAULT: "#027A48",
@@ -72,7 +76,18 @@ export default {
           800: "#EF3A4B",
         },
         blue: {
+          50: "#F0F9FF",
           100: "#0089F1",
+          700: "#026AA2",
+        },
+        pink: {
+          50: "#f7edf6",
+          100: "#c4214c",
+          500: "#c11574",
+        },
+        rose: {
+          50: "#FFF1F3",
+          700: "#C01048",
         },
         light: {
           100: "#D6E0FF",
@@ -96,6 +111,12 @@ export default {
         },
         gray: {
           100: "#CBD5E1",
+          200: "#64768B",
+        },
+        success: {
+          50: "#ecfdf3",
+          500: "#12b76a",
+          700: "#027a48",
         },
       },
       screens: {
@@ -111,5 +132,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar-hide")],
 } satisfies Config;
