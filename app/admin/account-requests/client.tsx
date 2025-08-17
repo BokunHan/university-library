@@ -75,7 +75,7 @@ const AccountRequestsClient = ({ requestUsers }: { requestUsers: User[] }) => {
   return (
     <main className="h-full">
       {users.length > 0 ? (
-        <>
+        <div className="mt-[72px]">
           <Table
             data={users}
             columns={columnConfig}
@@ -97,7 +97,7 @@ const AccountRequestsClient = ({ requestUsers }: { requestUsers: User[] }) => {
               renderItem={dialogState.config.renderItem}
             />
           )}
-        </>
+        </div>
       ) : (
         <div className="flex flex-col gap-2 items-center justify-center h-full">
           <img

@@ -9,7 +9,7 @@ const Page = async () => {
   const allBooks = (await getAllBooks(10, 0)) as Book[];
 
   return (
-    <section className="w-full rounded-2xl bg-white p-6 flex flex-col gap-6">
+    <section className="w-full rounded-2xl bg-white p-6 flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-xl font-semibold">All Books</h2>
         <Button className="new-book_btn" asChild>

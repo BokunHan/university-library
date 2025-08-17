@@ -52,13 +52,15 @@ const BorrowRequestsClient = ({
 
   return (
     <main className="h-full">
-      {requests.length === 0 ? (
-        <Table
-          data={requests}
-          columns={columnsConfig}
-          onRowUpdate={handleRowUpdate}
-          onRowAction={handleRowAction}
-        />
+      {requests.length > 0 ? (
+        <div className="mt-[72px]">
+          <Table
+            data={requests}
+            columns={columnsConfig}
+            onRowUpdate={handleRowUpdate}
+            onRowAction={handleRowAction}
+          />
+        </div>
       ) : (
         <div className="flex flex-col items-center justify-center gap-2 h-full">
           <img
