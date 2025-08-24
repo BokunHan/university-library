@@ -6,7 +6,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { Session } from "next-auth";
 
-const Header = ({ session }: { session: Session }) => {
+const Header = ({
+  session,
+  isAdmin,
+}: {
+  session: Session;
+  isAdmin: boolean;
+}) => {
   return (
     <header className="my-10 flex items-center justify-between gap-5">
       <Link href="/">
@@ -14,6 +20,13 @@ const Header = ({ session }: { session: Session }) => {
       </Link>
 
       <ul className="flex flex-row items-center gap-8">
+        {isAdmin && (
+          <li>
+            <Link href="/admin">
+              <Button variant="link">Admin Panel</Button>
+            </Link>
+          </li>
+        )}
         <li>
           <Link href="/my-profile">
             <Avatar>

@@ -67,7 +67,7 @@ const Dialog = <T extends object>({
 
         {/* 3. Use the renderItem function to display the item's details */}
         {item && renderItem && (
-          <div className="flex items-center justify-center gap-2 mt-5 mb-2 w-1/2">
+          <div className="flex items-center justify-center gap-2 mt-5 mb-2 w-full">
             {renderItem(item)}
           </div>
         )}

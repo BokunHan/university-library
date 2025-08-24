@@ -86,8 +86,9 @@ export const getBorrowRequestTableColumns = (
             'width="16" height="16" /><p style="font-weight: 600; ' +
             "font-size: 0.75rem; line-height: 1rem; font-family: IBM Plex Sans, sans-serif; " +
             'color: rgb(37 56 140);">Generate</p></Link>',
-          onClick: (request: BorrowRequest) =>
-            redirect(`/admin/books/receipt/${request.id}`),
+          onClick: () => {},
+          // onClick: (request: BorrowRequest) =>
+          //   redirect(`/admin/books/receipt/${request.id}`),
         },
       ],
     },

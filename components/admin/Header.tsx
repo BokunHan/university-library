@@ -1,5 +1,6 @@
 import React from "react";
 import { Session } from "next-auth";
+import Link from "next/link";
 
 const Header = ({ session }: { session: Session }) => {
   return (
@@ -11,6 +12,11 @@ const Header = ({ session }: { session: Session }) => {
         <p className="text-base text-slate-500">
           Monitor all of your users and books here.
         </p>
+      </div>
+      <div>
+        <Link href="/">
+          <button className="view-btn">Back to Overview</button>
+        </Link>
       </div>
     </header>
   );

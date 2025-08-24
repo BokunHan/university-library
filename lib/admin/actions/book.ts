@@ -82,9 +82,9 @@ export const getBookById = async (id: string) => {
 };
 
 export const deleteBook = async (id: string) => {
-  try {
-    await db.delete(books).where(eq(books.id, id));
-  } catch (error) {
-    console.log("Failed to delete book", error);
-  }
+  // try {
+  //   await db.delete(books).where(eq(books.id, id));
+  // } catch (error) {
+  //   console.log("Failed to delete book", error);
+  // }
 };

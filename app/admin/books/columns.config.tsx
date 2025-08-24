@@ -16,7 +16,7 @@ export const getBooksTableColumns = ({
     buttonText: "Delete This Book",
     onConfirm: handleDeleteBook,
     renderItem: (book) => (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-2 w-1/2">
         <div className="w-[28.95px]">
           <BookCover
             variant="extraSmall"

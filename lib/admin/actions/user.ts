@@ -37,9 +37,9 @@ export const changeUserRole = async (id: string, role: string) => {
 };
 
 export const deleteUser = async (id: string) => {
-  const deleteUser = await db.delete(users).where(eq(users.id, id));
-
-  if (!deleteUser) throw new Error("Failed to delete user");
+  // const deleteUser = await db.delete(users).where(eq(users.id, id));
+  //
+  // if (!deleteUser) throw new Error("Failed to delete user");
 };
 
 export const getAccountRequests = async (limit: number, offset: number) => {
