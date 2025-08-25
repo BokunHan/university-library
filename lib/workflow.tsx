@@ -37,7 +37,7 @@ export const sendEmail = async ({
       console.error(`Unknown email type provided: ${type}`);
       throw new Error(`Unknown email type: ${type}`);
   }
-  const html = render(component);
+  const html = await render(component);
 
   await qstashClient.publishJSON({
     api: {
