@@ -10,7 +10,7 @@ const WelcomeEmail = ({ fullName }: { fullName: string }) => {
   ];
   const buttonText = "Login to BookWise";
   const buttonUrl = "https://university-library-iota-ecru.vercel.app";
-  const footer = "Happy reading, \nThe BookWise Team";
+  const footer = "Happy reading,\nThe BookWise Team";
 
   return (
     <EmailTemplate
