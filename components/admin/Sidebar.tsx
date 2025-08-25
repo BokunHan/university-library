@@ -8,7 +8,6 @@ import { cn, getInitials } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Session } from "next-auth";
-import { signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { logOut } from "@/lib/admin/actions/auth";
 
@@ -25,7 +24,7 @@ const Sidebar = ({ session }: { session: Session }) => {
             width={37}
             height={37}
           />
-          <h1>BookWide</h1>
+          <h1>BookWise</h1>
         </div>
 
         <div className="mt-10 flex flex-col gap-5">

@@ -9,6 +9,16 @@ type InitialData = {
   email: string;
   fullName: string;
 };
+export type EmailType =
+  | "welcome"
+  | "approval"
+  | "borrow"
+  | "due"
+  | "receipt-ready"
+  | "return"
+  | "inactive-3"
+  | "inactive-30"
+  | "receipt";
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const THREE_DAY_IN_MS = 3 * ONE_DAY_IN_MS;
@@ -40,8 +50,8 @@ export const { POST } = serve<InitialData>(async (context) => {
   await context.run("new-signup", async () => {
     await sendEmail({
       email,
-      subject: "Welcome to the platform",
-      message: `Welcome ${fullName}!`,
+      type: "welcome",
+      fullName,
     });
   });
 
@@ -56,16 +66,8 @@ export const { POST } = serve<InitialData>(async (context) => {
       await context.run("send-email-non-active", async () => {
         await sendEmail({
           email,
-          subject: "Are you still there?",
-          message: `Hey ${fullName}, we miss you!`,
-        });
-      });
-    } else if (state === "active") {
-      await context.run("send-email-active", async () => {
-        await sendEmail({
-          email,
-          subject: "Welcome back!",
-          message: `Welcome back ${fullName}!`,
+          type: "inactive-3",
+          fullName,
         });
       });
     }

@@ -57,6 +57,7 @@ export default {
         primary: {
           DEFAULT: "#E7C9A5",
           admin: "#25388C",
+          emailBG: "#111624",
           50: "#e9f3fb",
           100: "#256ff1",
           500: "#175cd3",
