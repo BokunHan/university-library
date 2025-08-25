@@ -4,7 +4,7 @@ import config from "@/lib/config";
 import { Client as QStashClient, resend } from "@upstash/qstash";
 import { EmailType } from "@/app/api/workflows/onboarding/route";
 import WelcomeEmail from "@/emails/WelcomeEmail";
-import { render } from "@react-email/components";
+import { render, pretty } from "@react-email/render";
 
 export const workflowClient = new WorkflowClient({
   baseUrl: config.env.upstash.qstashUrl,
@@ -25,7 +25,7 @@ export const sendEmail = async ({
   fullName: string;
 }) => {
   let subject: string;
-  let component: React.ReactElement;
+  let component: React.ReactNode;
 
   switch (type) {
     case "welcome":
@@ -37,7 +37,7 @@ export const sendEmail = async ({
       console.error(`Unknown email type provided: ${type}`);
       throw new Error(`Unknown email type: ${type}`);
   }
-  const html = await render(component);
+  const html = await pretty(await render(component));
 
   await qstashClient.publishJSON({
     api: {
