@@ -13,6 +13,7 @@ import {
   Section,
   Tailwind,
   Text,
+  Font,
 } from "@react-email/components";
 import { textWithBreaks } from "@/lib/utils";
 
@@ -38,6 +39,16 @@ const EmailTemplate = ({
   return (
     <Html>
       <Head>
+        <Font
+          fontFamily="IBM Plex Sans"
+          fallbackFontFamily="Arial"
+          webFont={{
+            url: "https://fonts.gstatic.com/s/ibmplexsans/v19/zYXgKVElMYYaJe8bpLHnCwDKhdHeFaxOedc.woff2",
+            format: "woff2",
+          }}
+          fontWeight={400}
+          fontStyle="normal"
+        />
         <style>
           {`
             @media (max-width: 600px) {
@@ -52,7 +63,10 @@ const EmailTemplate = ({
       </Head>
       <Preview>{previewText}</Preview>
       <Tailwind>
-        <Body className="bg-[#111624] my-auto mx-auto font-ibm-plex-sans">
+        <Body
+          className="bg-[#111624] my-auto mx-auto"
+          style={{ fontFamily: "'IBM Plex Sans', Arial, sans-serif" }}
+        >
           <Container className="main-container my-10 mx-8 px-5 py-10">
             <Section className="border-b border-dashed border-[#232839] pb-7">
               <Row>
@@ -65,29 +79,33 @@ const EmailTemplate = ({
                   />
                 </Column>
                 <Column>
-                  <Text className="text-[28px] text-white font-ibm-plex-sans font-semibold">
+                  <Text className="text-[28px] text-white font-semibold">
                     BookWise
                   </Text>
                 </Column>
               </Row>
             </Section>
-            <Heading className="text-2xl text-white font-ibm-plex-sans font-bold mt-10">
+            <Heading className="text-2xl text-white font-bold mt-10">
               {textWithBreaks({ text: header })}
             </Heading>
             {body.map((item) => (
-              <Text className="text-lg text-white font-ibm-plex-sans font-light my-7">
+              <Text className="text-lg text-white font-light my-7">
                 {textWithBreaks({ text: item })}
               </Text>
             ))}
             <Section className="text-start">
               <Button
-                className="bg-[#e7c9a5] text-[#111624] inline-flex h-[46px] w-[177px] p-2 items-center justify-center rounded-md font-ibm-plex-sans font-semibold text-base"
+                className="bg-[#e7c9a5] text-[#111624] inline-flex h-[46px] w-[177px] p-2 items-center justify-center rounded-md font-semibold text-base"
+                style={{
+                  textAlign: "center",
+                  lineHeight: "46px",
+                }}
                 href={buttonUrl}
               >
                 {buttonText}
               </Button>
             </Section>
-            <Text className="text-lg text-white font-ibm-plex-sans font-light my-7">
+            <Text className="text-lg text-white font-light my-6">
               {textWithBreaks({ text: footer })}
             </Text>
           </Container>
