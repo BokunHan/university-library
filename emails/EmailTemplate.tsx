@@ -42,7 +42,7 @@ const EmailTemplate = ({
               <Row>
                 <Column width="47">
                   <Image
-                    src="/static/logo.svg"
+                    src="/icons/logo.svg"
                     alt="logo"
                     width={40}
                     height={32}
