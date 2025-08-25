@@ -15,7 +15,7 @@ const Header = ({ session }: { session: Session }) => {
       </div>
       <div>
         <Link href="/">
-          <button className="view-btn">Back to Overview</button>
+          <button className="view-btn">Back to Library</button>
         </Link>
       </div>
     </header>
