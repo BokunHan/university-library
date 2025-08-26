@@ -15,9 +15,12 @@ const Header = ({
 }) => {
   return (
     <header className="my-10 flex items-center justify-between gap-5">
-      <Link href="/">
-        <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
-      </Link>
+      <div className="flex gap-3 items-center">
+        <Link href="/">
+          <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
+        </Link>
+        <p className="text-[28px] text-white font-semibold">BookWise</p>
+      </div>
 
       <ul className="flex flex-row items-center gap-8">
         {isAdmin && (

@@ -33,7 +33,9 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             <h3>Summary</h3>
             <div className="space-y-5 text-xl text-light-100">
               {bookDetails.summary.split("\n").map((line, i) => (
-                <p key={i}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{line}</p>
+                <p key={i} className="indent-7">
+                  {line}
+                </p>
               ))}
             </div>
           </section>

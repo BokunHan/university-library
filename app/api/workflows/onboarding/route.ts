@@ -9,16 +9,6 @@ type InitialData = {
   email: string;
   fullName: string;
 };
-export type EmailType =
-  | "welcome"
-  | "approval"
-  | "borrow"
-  | "due"
-  | "receipt-ready"
-  | "return"
-  | "inactive-3"
-  | "inactive-30"
-  | "receipt";
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const THREE_DAY_IN_MS = 3 * ONE_DAY_IN_MS;
@@ -57,16 +47,40 @@ export const { POST } = serve<InitialData>(async (context) => {
 
   await context.sleep("wait-for-3-days", 60 * 60 * 24 * 3);
 
+  let state = await context.run("check-user-state", async () => {
+    return await getUserState(email);
+  });
+
+  if (state === "non-active") {
+    await context.run("send-email-non-active", async () => {
+      await sendEmail({
+        email,
+        type: "inactive-3",
+        fullName,
+      });
+    });
+  }
+
+  await context.sleep("wait-for-1-month", 60 * 60 * 24 * 30);
+
   while (true) {
-    const state = await context.run("check-user-state", async () => {
+    state = await context.run("check-user-state", async () => {
       return await getUserState(email);
     });
 
     if (state === "non-active") {
-      await context.run("send-email-non-active", async () => {
+      await context.run("send-email-non-active-monthly", async () => {
         await sendEmail({
           email,
-          type: "inactive-3",
+          type: "inactive-30",
+          fullName,
+        });
+      });
+    } else {
+      await context.run("send-email-active-monthly", async () => {
+        await sendEmail({
+          email,
+          type: "active-30",
           fullName,
         });
       });

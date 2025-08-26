@@ -5,6 +5,7 @@ import { books, borrowRecords, users } from "@/database/schema";
 import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { BorrowRequest, BorrowStatus } from "@/types";
 import dayjs from "dayjs";
+import { sendEmail } from "@/lib/workflow";
 
 export const getAllBorrowRequests = async (limit: number, offset: number) => {
   try {
@@ -73,7 +74,11 @@ export const getBorrowRequestById = async (id: string) => {
   }
 };
 
-export const changeStatus = async (id: string, status: BorrowStatus) => {
+export const changeStatus = async (
+  id: string,
+  bookId: string,
+  status: BorrowStatus,
+) => {
   try {
     const updatedRequest = await db
       .update(borrowRecords)
@@ -88,11 +93,39 @@ export const changeStatus = async (id: string, status: BorrowStatus) => {
         .where(
           and(isNotNull(borrowRecords.returnDate), eq(borrowRecords.id, id)),
         );
+
+      await db
+        .update(books)
+        .set({ availableCopies: Number(books.availableCopies) - 1 })
+        .where(eq(books.id, bookId));
     } else if (status === "Returned" || status === "Late Return") {
       await db
         .update(borrowRecords)
         .set({ returnDate: dayjs().toDate().toDateString() })
         .where(and(isNull(borrowRecords.returnDate), eq(borrowRecords.id, id)));
+
+      await db
+        .update(books)
+        .set({ availableCopies: Number(books.availableCopies) + 1 })
+        .where(eq(books.id, bookId));
+
+      if (status === "Returned") {
+        const user = await db
+          .select({
+            email: users.email,
+            fullName: users.fullName,
+          })
+          .from(borrowRecords)
+          .innerJoin(users, eq(borrowRecords.userId, users.id));
+
+        if (user.length === 1) {
+          await sendEmail({
+            email: user[0].email,
+            type: "return",
+            fullName: user[0].fullName,
+          });
+        }
+      }
     }
 
     if (updatedRequest.length === 0 || !updatedRequest[0]) {

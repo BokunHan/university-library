@@ -60,6 +60,13 @@ interface Book {
   isLoanedBook?: boolean;
 }
 
+interface BookItem {
+  book: Book;
+  recordId: string;
+  borrowDate: string;
+  daysLeft: number;
+}
+
 interface AuthCredentials {
   fullName: string;
   email: string;

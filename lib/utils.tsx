@@ -55,3 +55,14 @@ export const textWithBreaks = ({ text }: { text: string }) => {
     </Fragment>
   );
 };
+
+export const calculateDaysLeft = (dueDate: string) => {
+  const now = dayjs(); // Today's date
+  const due = dayjs(dueDate); // The due date
+
+  // Use .diff() to get the difference in days
+  const daysRemaining = due.diff(now, "day");
+
+  // Ensure we don't return a negative number for overdue items
+  return Math.max(0, daysRemaining);
+};

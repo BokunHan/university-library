@@ -4,6 +4,7 @@ import { db } from "@/database/drizzle";
 import { borrowRecords, ROLE_ENUM, users } from "@/database/schema";
 import { eq, sql } from "drizzle-orm";
 import { User } from "@/types";
+import { sendEmail } from "@/lib/workflow";
 
 type UserRole = (typeof ROLE_ENUM.enumValues)[number];
 
@@ -59,14 +60,36 @@ export const approveAccountRequest = async (id: string) => {
     .set({ status: "APPROVED" })
     .where(eq(users.id, id));
 
-  if (!approvedUser) throw new Error("Failed to approve user");
+  if (!approvedUser) {
+    throw new Error("Failed to approve user");
+  } else {
+    const user = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    if (user.length === 1) {
+      await sendEmail({
+        email: user[0].email,
+        type: "approval",
+        fullName: user[0].fullName,
+      });
+    }
+  }
 };
 
 export const rejectAccountRequest = async (id: string) => {
-  const approvedUser = await db
+  const rejectedUser = await db
     .update(users)
     .set({ status: "REJECTED" })
     .where(eq(users.id, id));
 
-  if (!approvedUser) throw new Error("Failed to reject user");
+  if (!rejectedUser) {
+    throw new Error("Failed to reject user");
+  } else {
+    const user = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    if (user.length === 1) {
+      await sendEmail({
+        email: user[0].email,
+        type: "rejection",
+        fullName: user[0].fullName,
+      });
+    }
+  }
 };

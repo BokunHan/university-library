@@ -1,0 +1,20 @@
+/* This file tells Tailwind which "layers" to include.
+  The build process will automatically fill this with the
+  correct styles based on the classes in your component.
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* It's good practice to add a few base styles here,
+  especially for PDF generation.
+*/
+@layer base {
+    body {
+        /* This helps ensure background colors are printed correctly by Puppeteer */
+        -webkit-print-color-adjust: exact;
+
+        /* You can set a default font-family as a fallback */
+        font-family: sans-serif;
+    }
+}

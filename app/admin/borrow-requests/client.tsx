@@ -32,6 +32,7 @@ const BorrowRequestsClient = ({
     async (data: BorrowRequest, item: DropDownItemModel<BorrowRequest>) => {
       const updatedRequest = await changeStatus(
         data.id,
+        data.bookId,
         item.value as BorrowStatus,
       );
       if (updatedRequest) {
