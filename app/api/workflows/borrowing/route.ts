@@ -41,7 +41,6 @@ export const { POST } = serve<InitialData>(async (context) => {
     context.requestPayload;
 
   await context.run("borrow-book", async () => {
-    console.log("Triggered Borrow Book Workflow");
     await sendEmail({
       email,
       type: "borrow",

@@ -65,7 +65,7 @@ const EmailTemplate = ({
       <Tailwind>
         <Body className="bg-[#111624] my-auto mx-auto font-ibm-plex-sans">
           <Container className="main-container my-10 mx-8 px-5 py-10">
-            <Section className="border-b border-dashed border-[#232839] pb-7">
+            <Section className="border-b border-[#232839]/50 pb-4">
               <Row>
                 <Column width="47">
                   <Img
@@ -82,7 +82,7 @@ const EmailTemplate = ({
                 </Column>
               </Row>
             </Section>
-            <Heading className="text-2xl text-white font-ibm-plex-sans font-bold mt-10">
+            <Heading className="text-2xl text-white font-ibm-plex-sans font-bold mt-6">
               {textWithBreaks({ text: header })}
             </Heading>
             {body.map((item, i) => (
