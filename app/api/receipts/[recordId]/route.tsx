@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database/drizzle";
-import { borrowRecords, users, books } from "@/database/schema";
+import { borrowRecords, books } from "@/database/schema";
 import { eq } from "drizzle-orm";
-import puppeteer from "puppeteer";
 import { ReceiptTemplate } from "@/components/ReceiptTemplate";
 import dayjs from "dayjs";
 import { promises as fs } from "fs";
 import path from "path";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
+import puppeteerFull from "puppeteer";
 
 export async function GET(
   request: NextRequest,
@@ -58,7 +60,23 @@ export async function GET(
     );
 
     // 3. Generate PDF using Puppeteer
-    const browser = await puppeteer.launch({ headless: true });
+    let browser;
+    if (process.env.NODE_ENV === "production") {
+      // Use the serverless-compatible Chromium in production (Vercel)
+      browser = await puppeteer.launch({
+        args: [...chromium.args, "--single-process"],
+        executablePath: await chromium.executablePath(),
+        headless: true,
+      });
+    } else {
+      // Use the default Puppeteer behavior in development
+      // This will automatically find the locally installed Chromium
+      browser = await puppeteer.launch({
+        executablePath: puppeteerFull.executablePath(),
+        headless: true,
+      });
+    }
+
     const page = await browser.newPage();
     await page.setContent(html);
     const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
