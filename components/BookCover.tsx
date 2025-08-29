@@ -2,7 +2,6 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import BookCoverSvg from "@/components/BookCoverSvg";
 import { IKImage } from "imagekitio-next";
 import config from "@/lib/config";
@@ -22,6 +21,7 @@ interface Props {
   variant?: BookCoverVariant;
   coverColor: string;
   coverUrl: string;
+  isBlurred?: boolean;
 }
 
 const BookCover = ({
@@ -29,6 +29,7 @@ const BookCover = ({
   variant = "regular",
   coverColor = "#012B48",
   coverUrl = "https://placehold.co/400x600.png",
+  isBlurred = false,
 }: Props) => {
   return (
     <div
@@ -38,7 +39,7 @@ const BookCover = ({
         className,
       )}
     >
-      <BookCoverSvg coverColor={coverColor} />
+      <BookCoverSvg coverColor={coverColor} isBlurred={isBlurred} />
 
       <div
         className="absolute"
@@ -49,7 +50,7 @@ const BookCover = ({
           urlEndpoint={config.env.imagekit.urlEndpoint}
           alt="Book cover"
           fill
-          className="rounded-sm object-fill"
+          className={cn("rounded-sm object-fill", isBlurred && "blur-sm")}
           //loading="lazy"
           lqip={{ active: true }}
         />

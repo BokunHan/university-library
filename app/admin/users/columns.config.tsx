@@ -1,7 +1,11 @@
 import React from "react";
-import { ColumnConfig, DialogConfig, DropDownItemModel, User } from "@/types";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/utils";
+import {
+  ColumnConfig,
+  DialogConfig,
+  DropDownItemModel,
+  EnrichedUser,
+  User,
+} from "@/types";
 import config from "@/lib/config";
 import UserInfo from "@/components/admin/UserInfo";
 
@@ -11,10 +15,10 @@ export const getUsersTableColumns = ({
 }: {
   handleDeleteUser: (user: User) => Promise<void>;
   handleChangeRole: (
-    user: User,
-    item: DropDownItemModel<User>,
-  ) => Promise<User>;
-}): ColumnConfig<User>[] => {
+    user: EnrichedUser,
+    item: DropDownItemModel<EnrichedUser>,
+  ) => Promise<EnrichedUser>;
+}): ColumnConfig<EnrichedUser>[] => {
   const deleteUserDialogConfig: DialogConfig<User> = {
     icon: "/icons/admin/alert.svg",
     header: "Delete User Account",
@@ -27,7 +31,7 @@ export const getUsersTableColumns = ({
     renderItem: (user) => <UserInfo user={user} />,
   };
 
-  const changeRoleDropDownItems: DropDownItemModel<User>[] = [
+  const changeRoleDropDownItems: DropDownItemModel<EnrichedUser>[] = [
     {
       bgColor: "bg-pink-50",
       dotColor: "bg-pink-500",
@@ -46,7 +50,7 @@ export const getUsersTableColumns = ({
     },
   ];
 
-  const usersTableColumns: ColumnConfig<User>[] = [
+  const usersTableColumns: ColumnConfig<EnrichedUser>[] = [
     {
       header: "Name",
       type: "user",

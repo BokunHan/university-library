@@ -12,7 +12,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
 
   return (
     <>
-      <Button asChild className="back-btn">
+      <Button asChild className="back-btn" variant="default">
         <Link href="/admin/books">Go Back</Link>
       </Button>
 

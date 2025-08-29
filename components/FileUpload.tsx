@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  IKImage,
-  IKVideo,
-  ImageKitProvider,
-  IKUpload,
-  ImageKitContext,
-} from "imagekitio-next";
+import { IKImage, IKVideo, ImageKitProvider, IKUpload } from "imagekitio-next";
 import config from "@/lib/config";
 import { useRef, useState } from "react";
 import Image from "next/image";
@@ -21,7 +15,9 @@ const {
 
 const authenticator = async () => {
   try {
-    const response = await fetch(`${config.env.apiEndpoint}/api/auth/imagekit`);
+    const response = await fetch(
+      `${config.env.prodApiEndpoint}/api/auth/imagekit`,
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -40,7 +36,7 @@ const authenticator = async () => {
 };
 
 interface Props {
-  type: "image" | "video";
+  type: "image" | "video" | "ID";
   accept: string;
   placeholder: string;
   folder: string;
@@ -63,6 +59,7 @@ const FileUpload = ({
     filePath: value ?? null,
   });
   const [progress, setProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const styles = {
     button:
@@ -84,10 +81,16 @@ const FileUpload = ({
     onFileChange(res.filePath);
 
     toast.success(`${res.filePath} uploaded successfully!`);
+    setIsLoading(false);
   };
 
   const onValidate = (file: File) => {
-    if (type === "image") {
+    if (type === "ID") {
+      if (file.size > 50 * 1024) {
+        toast.error(`Please upload an image that is less than 50KB.`);
+        return false;
+      }
+    } else if (type === "image") {
       if (file.size > 20 * 1024 * 1024) {
         toast.error(`Please upload an image that is less than 20MB.`);
         return false;
@@ -100,6 +103,8 @@ const FileUpload = ({
     }
     return true;
   };
+
+  const placeHolderLines = placeholder.split("\n");
 
   return (
     <ImageKitProvider
@@ -114,7 +119,10 @@ const FileUpload = ({
         onSuccess={onSuccess}
         useUniqueFileName={true}
         validateFile={onValidate}
-        onUploadStart={() => setProgress(0)}
+        onUploadStart={() => {
+          setIsLoading(true);
+          setProgress(0);
+        }}
         onUploadProgress={({ loaded, total }) => {
           const percent = Math.round((loaded / total) * 100);
           setProgress(percent);
@@ -124,7 +132,7 @@ const FileUpload = ({
       />
 
       <button
-        className={cn("upload-btn", styles.button)}
+        className={cn("upload-btn py-2", styles.button)}
         onClick={(e) => {
           e.preventDefault();
           if (ikUploadRef.current) {
@@ -132,6 +140,7 @@ const FileUpload = ({
             ikUploadRef.current?.click();
           }
         }}
+        disabled={isLoading}
       >
         <Image
           src="/icons/upload.svg"
@@ -141,11 +150,29 @@ const FileUpload = ({
           className="object-contain"
         />
 
-        <p className={cn("text-base", styles.placeholder)}>{placeholder}</p>
-
-        {file && (
-          <p className={cn("upload-filename", styles.text)}>{file.filePath}</p>
-        )}
+        <div className={cn("text-base", styles.placeholder)}>
+          {isLoading ? (
+            "Uploading..."
+          ) : (
+            <>
+              {file && (
+                <>
+                  {progress === 0 ? (
+                    <>
+                      {placeHolderLines.map((line, i) => (
+                        <p key={i}>{line}</p>
+                      ))}
+                    </>
+                  ) : (
+                    <p className={cn("upload-filename", styles.text)}>
+                      {file.filePath}
+                    </p>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </div>
       </button>
 
       {progress > 0 && progress !== 100 && (
@@ -157,16 +184,16 @@ const FileUpload = ({
       )}
 
       {file &&
-        (type === "image" ? (
+        (type === "image" || type === "ID" ? (
           <IKImage
-            alt={file.filePath}
-            path={file.filePath}
+            alt={file.filePath!}
+            path={file.filePath!}
             width={500}
             height={300}
           />
         ) : type === "video" ? (
           <IKVideo
-            path={file.filePath}
+            path={file.filePath!}
             controls={true}
             className="h-96 w-full rounded-xl"
           />

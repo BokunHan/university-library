@@ -101,8 +101,12 @@ const Table = <T extends { [key: string]: any }>({
           <div className="flex items-center gap-5">
             {column.actions?.map((action: ActionConfig<T>, index) => {
               let buttonContent;
-              if (action.buttonType === "text" && action.text) {
-                buttonContent = action.text;
+              if (action.buttonType === "text") {
+                if (action.text) {
+                  buttonContent = action.text;
+                } else if (action.template) {
+                  return action.template(props);
+                }
               }
 
               if (action.buttonType === "icon" && action.icon) {

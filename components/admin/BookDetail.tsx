@@ -6,6 +6,7 @@ import { simpleDate } from "@/lib/utils";
 import BookVideo from "@/components/BookVideo";
 import { Book } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 const BookDetail = ({ book }: { book: Book }) => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const BookDetail = ({ book }: { book: Book }) => {
   return (
     <main className="flex flex-col">
       <section>
-        <Button className="back-btn" onClick={handleBack}>
+        <Button className="back-btn" onClick={handleBack} variant="default">
           <img
             src="/icons/admin/arrow-left.svg"
             alt="arrow-left"
@@ -72,17 +73,19 @@ const BookDetail = ({ book }: { book: Book }) => {
           <p className="text-base font-normal font-ibm-plex-sans text-gray-200">
             {book.genre}
           </p>
-          <Button className="book-form_btn">
-            <img
-              src="/icons/admin/edit-2.svg"
-              alt="edit"
-              width={16}
-              height={16}
-            />
-            <p className="text-white text-sm font-bold font-ibm-plex-sans">
-              Edit Book
-            </p>
-          </Button>
+          <Link href={`/admin/books/edit/${book.id}`}>
+            <Button className="book-form_btn" variant="default">
+              <img
+                src="/icons/admin/edit-2.svg"
+                alt="edit"
+                width={16}
+                height={16}
+              />
+              <p className="text-white text-sm font-bold font-ibm-plex-sans">
+                Edit Book
+              </p>
+            </Button>
+          </Link>
         </div>
       </section>
 

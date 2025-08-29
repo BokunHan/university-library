@@ -1,6 +1,7 @@
 import { getAllUsers, getBorrowCounts } from "@/lib/admin/actions/user";
 import React from "react";
 import AllUsersClient from "./client";
+import { EnrichedUser } from "@/types";
 
 const Page = async () => {
   const [users, borrowCounts] = await Promise.all([
@@ -15,7 +16,7 @@ const Page = async () => {
   const enrichedUsers = users.map((user) => ({
     ...user,
     borrowCount: borrowCountMap.get(user.id) || 0,
-  }));
+  })) as EnrichedUser[];
 
   return (
     <main className="all-users wrapper">

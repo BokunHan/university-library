@@ -1,10 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { Session } from "next-auth";
+import { usePathname } from "next/navigation";
+import { logOut } from "@/lib/admin/actions/auth";
 
 const Header = ({
   session,
@@ -13,41 +17,77 @@ const Header = ({
   session: Session;
   isAdmin: boolean;
 }) => {
+  const pathname = usePathname();
+
   return (
-    <header className="my-10 flex items-center justify-between gap-5">
+    <header className="my-10 flex items-center justify-between gap-5 w-full">
       <div className="flex gap-3 items-center">
-        <Link href="/">
-          <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
-        </Link>
-        <p className="text-[28px] text-white font-semibold">BookWise</p>
+        <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
+        <p className="text-[28px] text-white font-semibold hidden lg:block">
+          BookWise
+        </p>
       </div>
 
-      <ul className="flex flex-row items-center gap-8">
+      <ul className="flex flex-row items-center gap-0 sm:gap-3">
         {isAdmin && (
           <li>
             <Link href="/admin">
-              <Button variant="link">Admin Panel</Button>
+              <Button
+                variant="link"
+                className="text-sm sm:text-lg text-blue-100"
+              >
+                Admin Panel
+              </Button>
             </Link>
           </li>
         )}
         <li>
+          <Link href="/">
+            <Button
+              variant="link"
+              className={cn(
+                "text-sm sm:text-lg",
+                pathname === "/" ? "text-primary" : "text-white",
+              )}
+            >
+              Home
+            </Button>
+          </Link>
+        </li>
+        <li>
+          <Link href="/search">
+            <Button
+              variant="link"
+              className={cn(
+                "text-sm sm:text-lg",
+                pathname === "/search" ? "text-primary" : "text-white",
+              )}
+            >
+              Search
+            </Button>
+          </Link>
+        </li>
+        <li className="px-3">
           <Link href="/my-profile">
             <Avatar>
-              <AvatarFallback className="bg-amber-100">
-                {getInitials(session?.user?.name || "IN")}
+              <AvatarFallback
+                className={cn(
+                  "hover:bg-primary",
+                  pathname === "/my-profile" ? "bg-primary" : "bg-light-100",
+                )}
+              >
+                <span className="font-serif font-semibold text-sm">
+                  {getInitials(session?.user?.name || "IN")}
+                </span>
               </AvatarFallback>
             </Avatar>
           </Link>
         </li>
         <li>
-          <form
-            action={async () => {
-              "use server";
-
-              await signOut();
-            }}
-          >
-            <Button>Logout</Button>
+          <form action={logOut}>
+            <Button variant="link" className="text-sm text-white sm:text-lg">
+              Logout
+            </Button>
           </form>
         </li>
       </ul>

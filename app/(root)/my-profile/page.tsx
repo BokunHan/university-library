@@ -1,7 +1,7 @@
 import React from "react";
 import { auth } from "@/auth";
 import { db } from "@/database/drizzle";
-import { books, borrowRecords } from "@/database/schema";
+import { books, borrowRecords, users } from "@/database/schema";
 import { desc, eq } from "drizzle-orm";
 import BorrowedBookList from "@/components/BorrowedBookList";
 import { calculateDaysLeft } from "@/lib/utils";
@@ -34,14 +34,24 @@ const Page = async () => {
     BookItems.push({
       book: borrowedBook[0],
       recordId: info.recordId,
-      borrowDate: dayjs(info.borrowDate).format("MMMM DD, YY"),
+      borrowDate: dayjs(info.borrowDate).format("MMM DD, YYYY"),
       daysLeft: calculateDaysLeft(info.dueDate),
     } as BookItem);
   }
 
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, session.user.id as string))
+    .limit(1);
+
   return (
     <>
-      <BorrowedBookList title="Borrowed Books" bookItems={BookItems} />
+      <BorrowedBookList
+        title="Borrowed Books"
+        bookItems={BookItems}
+        user={user[0]}
+      />
     </>
   );
 };

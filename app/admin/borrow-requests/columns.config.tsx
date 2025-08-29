@@ -1,5 +1,6 @@
 import { Book, BorrowRequest, ColumnConfig, DropDownItemModel } from "@/types";
 import { redirect } from "next/navigation";
+import DownloadReceipt from "@/components/DownloadReceipt";
 
 export const getBorrowRequestTableColumns = (
   handleChangeStatus: (
@@ -79,16 +80,25 @@ export const getBorrowRequestTableColumns = (
       actions: [
         {
           buttonType: "text",
-          text:
-            '<div style="display: flex; justify-content: center; gap: 0.25rem; ' +
-            "align-items: center; background-color: rgb(248 248 255); width: 104px; " +
-            'height: 36px; border-radius: 6px;"><img src="/icons/admin/receipt.svg" alt="receipt" ' +
-            'width="16" height="16" /><p style="font-weight: 600; ' +
-            "font-size: 0.75rem; line-height: 1rem; font-family: IBM Plex Sans, sans-serif; " +
-            'color: rgb(37 56 140);">Generate</p></Link>',
-          onClick: () => {},
-          // onClick: (request: BorrowRequest) =>
-          //   redirect(`/admin/books/receipt/${request.id}`),
+          template: (request: BorrowRequest) => (
+            <DownloadReceipt
+              key={request.id}
+              id={request.id}
+              className="book-receipt_admin-btn"
+            >
+              <div className="flex justify-center items-center gap-1">
+                <img
+                  src="/icons/admin/receipt.svg"
+                  alt="receipt"
+                  width="16"
+                  height="16"
+                />
+                <p className="font-semibold text-xs leading-4 font-ibm-plex-sans text-[rgb(37_56_140)]">
+                  Generate
+                </p>
+              </div>
+            </DownloadReceipt>
+          ),
         },
       ],
     },

@@ -71,7 +71,7 @@ interface AuthCredentials {
   fullName: string;
   email: string;
   password: string;
-  universityId: number;
+  universityId: string;
   universityCard: string;
 }
 
@@ -104,6 +104,10 @@ interface User {
   lastActivityDate: string | null;
   createdAt: Date | null;
   borrowCount?: number;
+}
+
+interface EnrichedUser extends User {
+  borrowCount: number;
 }
 
 export type BorrowStatus = (typeof BORROW_STATUS_ENUM.enumValues)[number];
@@ -150,6 +154,7 @@ export interface ActionConfig<T> {
   // Otherwise, 'onClick' runs directly.
   dialog?: DialogConfig<T>;
   link?: (data: T) => string; // If link exists, wrap the button with a Link component with href=link
+  template?: (data: T) => React.ReactNode;
 }
 
 // ColumnConfig and ColumnType remain the same

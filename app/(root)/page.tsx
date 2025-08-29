@@ -26,7 +26,7 @@ const Home = async () => {
     .select()
     .from(books)
     .orderBy(desc(books.createdAt))
-    .limit(10);
+    .limit(7);
 
   return (
     <>

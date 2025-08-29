@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -30,6 +30,7 @@ interface Props extends Partial<Book> {
 
 const BookForm = ({ type = "create", ...book }: Props) => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof bookSchema>>({
     // @ts-ignore
@@ -63,24 +64,33 @@ const BookForm = ({ type = "create", ...book }: Props) => {
   });
 
   const onSubmit = async (values: z.infer<typeof bookSchema>) => {
-    if (type === "create") {
-      const result = await createBook(values);
-      if (result.success) {
-        toast.success("Book created successfully.");
-        router.push(`/admin/books/${result.data.id}?from=create`);
-      } else {
-        toast.error(`Error: ${result.message}`);
-      }
-    }
+    setIsLoading(true);
 
-    if (type === "update") {
-      const result = await updateBook(book.id as string, values);
-      if (result.success) {
-        toast.success("Book updated successfully.");
-        router.push(`/admin/books/${result.data.id}?from=update`);
-      } else {
-        toast.error(`Error: ${result.message}`);
+    try {
+      if (type === "create") {
+        const result = await createBook(values);
+        if (result.success) {
+          toast.success("Book created successfully.");
+          router.push(`/admin/books/${result.data.id}?from=create`);
+        } else {
+          toast.error(`Error: ${result.message}`);
+        }
       }
+
+      if (type === "update") {
+        const result = await updateBook(book.id as string, values);
+        if (result.success) {
+          toast.success("Book updated successfully.");
+          router.push(`/admin/books/${result.data.id}?from=update`);
+        } else {
+          toast.error(`Error: ${result.message}`);
+        }
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+      toast.error("Error: ", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -300,8 +310,26 @@ const BookForm = ({ type = "create", ...book }: Props) => {
           )}
         />
 
-        <Button type="submit" className="book-form_btn text-white">
-          {type === "update" ? "Update Book" : "Add Book to Library"}
+        <Button
+          type="submit"
+          className="book-form_btn text-lg font-bold text-white"
+          disabled={isLoading}
+          formNoValidate={true}
+          variant="default"
+        >
+          {isLoading && (
+            <img
+              src="/icons/admin/loader.svg"
+              className="size-5 animate-spin"
+            />
+          )}
+          {type === "update"
+            ? isLoading
+              ? " Updating..."
+              : "Update Book"
+            : isLoading
+              ? " Creating..."
+              : "Add Book to Library"}
         </Button>
       </form>
     </Form>

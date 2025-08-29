@@ -1,6 +1,4 @@
-import { ColumnConfig, DialogConfig, DropDownItemModel, User } from "@/types";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/utils";
+import { ColumnConfig, DialogConfig, User } from "@/types";
 import config from "@/lib/config";
 import UserInfo from "@/components/admin/UserInfo";
 

@@ -32,6 +32,7 @@ const Dialog = <T extends object>({
   renderItem, // The new render prop
 }: DialogProps<T>) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -78,9 +79,19 @@ const Dialog = <T extends object>({
         <button
           className="confirm-btn mt-4"
           style={{ backgroundColor: buttonBgColor }}
-          onClick={onConfirm}
+          onClick={() => {
+            setIsLoading(true);
+            onConfirm();
+          }}
+          disabled={isLoading}
         >
-          {buttonText}
+          {isLoading && (
+            <img
+              src="/icons/admin/loader.svg"
+              className="size-5 animate-spin"
+            />
+          )}
+          {isLoading ? " Proceeding..." : buttonText}
         </button>
       </div>
     </DialogComponent>

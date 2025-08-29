@@ -3,8 +3,8 @@ import Link from "next/link";
 import BookCover from "@/components/BookCover";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Book } from "@/types";
+import DownloadReceipt from "@/components/DownloadReceipt";
 
 interface Props extends Book {
   recordId: string;
@@ -22,42 +22,87 @@ const BookCard = ({
   borrowDate,
   daysLeft,
 }: Props) => (
-  <li className={cn(recordId && "xs:w-52 w-full")}>
-    <Link
-      href={`/books/${id}`}
-      className={cn(recordId && "w-full flex flex-col")}
-    >
-      <BookCover coverColor={coverColor} coverUrl={coverUrl} />
-      <div className={cn("mt-4", !recordId && "xs:max-w-40 max-w-28")}>
-        <p className="book-title">{title}</p>
-        <p className="book-genre">{genre}</p>
+  <li className="borrowed-book relative">
+    {daysLeft <= 0 && (
+      <Image
+        src="/icons/warning.svg"
+        alt="warning"
+        width={29}
+        height={29}
+        className="absolute top-0 left-0"
+      />
+    )}
+
+    <Link href={`/books/${id}`} className="flex flex-col">
+      <div
+        className="flex items-center justify-center w-[240px] h-[247px] rounded-[10px]"
+        style={{ backgroundColor: `${coverColor}4D` }}
+      >
+        <BookCover
+          variant="medium"
+          coverColor={coverColor}
+          coverUrl={coverUrl}
+        />
       </div>
     </Link>
+    <div className="flex flex-col justify-start w-full h-full">
+      <p className="book-title">{title}</p>
+      <p className="book-genre">{genre}</p>
+    </div>
 
-    {recordId && (
-      <div className="mt-3 w-full">
-        <div className="book-loaned">
+    <div className="mt-4 w-full flex flex-col gap-2">
+      <div className="book-loaned">
+        <Image
+          src="/icons/book-2.svg"
+          alt="book"
+          width={18}
+          height={18}
+          className="object-contain"
+        />
+        <p className="text-light-100">{`Borrowed on ${borrowDate}`}</p>
+      </div>
+
+      <div className="book-loaned justify-between">
+        <div className="flex gap-1">
           <Image
-            src="/icons/calendar.svg"
-            alt="calendar"
+            src={daysLeft > 0 ? "/icons/calendar.svg" : "/icons/warning.svg"}
+            alt={daysLeft > 0 ? "calendar" : "warning"}
             width={18}
             height={18}
             className="object-contain"
           />
-          <p className={cn(daysLeft > 0 ? "text-light-100" : "text-pink-100")}>
-            {daysLeft > 0 ? `${daysLeft} days left to return` : "overdue"}
+          <p className={cn(daysLeft > 0 ? "text-light-100" : "text-red-300")}>
+            {daysLeft > 0 ? `${daysLeft} days left to due` : "Overdue Return"}
           </p>
         </div>
 
-        <Link href={`/api/receipts/${recordId}`} download>
-          <Button className="book-btn">
-            <p className="font-bebas-neue text-xl text-dark-100">
-              Download receipt
-            </p>
-          </Button>
-        </Link>
+        <DownloadReceipt
+          id={recordId}
+          className="flex items-center justify-center w-[26px] h-[26px] rounded-[4px]"
+          style={{ backgroundColor: `${coverColor}4D` }}
+        >
+          <Image
+            src="/icons/receipt.svg"
+            alt="receipt"
+            width={16}
+            height={16}
+          />
+        </DownloadReceipt>
+        {/*<Link*/}
+        {/*  href={`/api/receipts/${recordId}`}*/}
+        {/*  download*/}
+        {/*  className="flex items-center justify-center w-[26px] h-[26px] rounded-[4px]"*/}
+        {/*  style={{ backgroundColor: `${coverColor}4D` }}*/}
+        {/*>*/}
+        {/*  <Image*/}
+        {/*    src="/icons/receipt.svg"*/}
+        {/*    alt="receipt"*/}
+        {/*    width={16}*/}
+        {/*    height={16}*/}
+        {/*  />*/}
+        {/*</Link>*/}
       </div>
-    )}
+    </div>
   </li>
 );
 export default BookCard;

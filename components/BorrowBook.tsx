@@ -27,6 +27,7 @@ const BorrowBook = ({
   const handleBorrow = async () => {
     if (!isEligible) {
       toast.error(message);
+      return;
     }
 
     setBorrowing(true);
@@ -50,6 +51,7 @@ const BorrowBook = ({
       className="book-overview_btn"
       onClick={handleBorrow}
       disabled={borrowing}
+      variant="default"
     >
       <Image src="/icons/book.svg" alt="book" width={20} height={20} />
       <p className="font-bebas-neue text-xl text-dark-100">

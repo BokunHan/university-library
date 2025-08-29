@@ -1,29 +1,29 @@
 "use client";
 
 import { changeUserRole, deleteUser } from "@/lib/admin/actions/user";
-import { DropDownItemModel, User } from "@/types";
+import { DropDownItemModel, User, EnrichedUser } from "@/types";
 import React, { useCallback, useMemo, useState } from "react";
 import Table from "@/components/admin/Table";
 import Dialog from "@/components/admin/Dialog";
 import { getUsersTableColumns } from "@/app/admin/users/columns.config";
 import { toast } from "react-hot-toast";
 
-const AllUsersClient = ({ allUsers }: { allUsers: User[] }) => {
-  const [users, setUsers] = useState<User[]>(allUsers);
+const AllUsersClient = ({ allUsers }: { allUsers: EnrichedUser[] }) => {
+  const [users, setUsers] = useState<EnrichedUser[]>(allUsers);
   const [dialogState, setDialogState] = useState({
     isOpen: false,
     config: null as any,
-    item: null as User | null,
+    item: null as EnrichedUser | null,
   });
 
   // 2. HANDLER FUNCTIONS
-  const handleRowUpdate = useCallback((updatedUser: User) => {
+  const handleRowUpdate = useCallback((updatedUser: EnrichedUser) => {
     setUsers((users) =>
       users.map((user) => (user.id === updatedUser.id ? updatedUser : user)),
     );
   }, []);
 
-  const handleRowAction = useCallback((item: User, action: any) => {
+  const handleRowAction = useCallback((item: EnrichedUser, action: any) => {
     if (action.dialog) {
       setDialogState({ isOpen: true, item, config: action.dialog });
     } else if (action.onClick) {
@@ -59,11 +59,14 @@ const AllUsersClient = ({ allUsers }: { allUsers: User[] }) => {
   }, []);
 
   const handleChangeRole = useCallback(
-    async (data: User, item: DropDownItemModel<User>) => {
+    async (data: EnrichedUser, item: DropDownItemModel<EnrichedUser>) => {
       try {
         const updatedUser = (await changeUserRole(data.id, item.value)) as User;
         toast.success("User role changed successfully.");
-        return updatedUser;
+        return {
+          ...updatedUser,
+          borrowCount: data.borrowCount,
+        } as EnrichedUser;
       } catch (error) {
         console.log(error);
         toast.error("Failed to change user role");

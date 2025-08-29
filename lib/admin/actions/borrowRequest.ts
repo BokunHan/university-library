@@ -2,7 +2,7 @@
 
 import { db } from "@/database/drizzle";
 import { books, borrowRecords, users } from "@/database/schema";
-import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, ne, sql } from "drizzle-orm";
 import { BorrowRequest, BorrowStatus } from "@/types";
 import dayjs from "dayjs";
 import { sendEmail } from "@/lib/workflow";
@@ -80,12 +80,6 @@ export const changeStatus = async (
   status: BorrowStatus,
 ) => {
   try {
-    const updatedRequest = await db
-      .update(borrowRecords)
-      .set({ status: status as BorrowStatus })
-      .where(eq(borrowRecords.id, id))
-      .returning();
-
     if (status === "Borrowed") {
       await db
         .update(borrowRecords)
@@ -96,7 +90,7 @@ export const changeStatus = async (
 
       await db
         .update(books)
-        .set({ availableCopies: Number(books.availableCopies) - 1 })
+        .set({ availableCopies: sql`${books.availableCopies} - 1` })
         .where(eq(books.id, bookId));
     } else if (status === "Returned" || status === "Late Return") {
       await db
@@ -104,10 +98,18 @@ export const changeStatus = async (
         .set({ returnDate: dayjs().toDate().toDateString() })
         .where(and(isNull(borrowRecords.returnDate), eq(borrowRecords.id, id)));
 
-      await db
-        .update(books)
-        .set({ availableCopies: Number(books.availableCopies) + 1 })
-        .where(eq(books.id, bookId));
+      const record = await db
+        .select({ status: borrowRecords.status })
+        .from(borrowRecords)
+        .where(eq(borrowRecords.id, id))
+        .limit(1);
+
+      if (record && record.length > 0 && record[0].status === "Borrowed") {
+        await db
+          .update(books)
+          .set({ availableCopies: sql`${books.availableCopies} + 1` })
+          .where(eq(books.id, bookId));
+      }
 
       if (status === "Returned") {
         const user = await db
@@ -127,6 +129,12 @@ export const changeStatus = async (
         }
       }
     }
+
+    const updatedRequest = await db
+      .update(borrowRecords)
+      .set({ status: status as BorrowStatus })
+      .where(eq(borrowRecords.id, id))
+      .returning();
 
     if (updatedRequest.length === 0 || !updatedRequest[0]) {
       throw new Error("Failed to change status of borrow request");

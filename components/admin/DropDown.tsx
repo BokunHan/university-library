@@ -2,8 +2,8 @@
 
 import { DropDownItemModel } from "@/types";
 import { DropDownButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
+import React, { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface DropDownProps<T> {
   data: T;
@@ -65,25 +65,43 @@ const DropDown = <T extends { [key: string]: any }>({
   return (
     <div>
       <DropDownButtonComponent
-        cssClass="no-arrow-button custom-dropdown"
+        cssClass={cn(
+          "no-arrow-button custom-dropdown transparent-bg",
+          // isUpdating && "is-updating",
+        )}
         items={items}
         itemTemplate={itemTemplate}
         popupWidth={dropDownWidth}
+        disabled={isUpdating}
       >
         <article
-          className={"status-column justify-start " + activeItem?.bgColor}
+          className={cn(
+            "status-column ",
+            isUpdating ? "justify-center " : "justify-start ",
+            activeItem?.bgColor,
+          )}
           style={activeItem?.width ? { width: activeItem?.width } : {}}
         >
-          <div
-            className={"size-1.5 ml-2 rounded-full " + activeItem?.dotColor}
-          />
-          <h3
-            className={
-              "font-inter text-xs font-medium " + activeItem?.textColor
-            }
-          >
-            {activeItem?.value}
-          </h3>
+          {isUpdating ? (
+            <img
+              src="/icons/admin/loader-dark.svg"
+              className="size-5 animate-spin"
+            />
+          ) : (
+            <>
+              <div
+                className={"size-1.5 ml-2 rounded-full " + activeItem?.dotColor}
+              />
+
+              <h3
+                className={
+                  "font-inter text-xs font-medium " + activeItem?.textColor
+                }
+              >
+                {activeItem?.value}
+              </h3>
+            </>
+          )}
         </article>
       </DropDownButtonComponent>
     </div>

@@ -25,6 +25,7 @@ import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 import FileUpload from "@/components/FileUpload";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
@@ -42,6 +43,8 @@ const AuthForm = <T extends FieldValues>({
   const router = useRouter();
   const isSignIn = type === "SIGN_IN";
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm({
     // @ts-ignore
     resolver: zodResolver(schema),
@@ -49,18 +52,27 @@ const AuthForm = <T extends FieldValues>({
   });
 
   const handleSubmit: SubmitHandler<T> = async (data) => {
-    const result = await onSubmit(data);
+    setIsLoading(true);
 
-    if (result.success) {
-      toast.success(
-        isSignIn
-          ? "You have successfully signed in."
-          : "You have successfully signed up.",
-      );
+    try {
+      const result = await onSubmit(data);
 
-      router.push("/");
-    } else {
-      toast.error(isSignIn ? "Error signing in." : "Error signing up.");
+      if (result.success) {
+        toast.success(
+          isSignIn
+            ? "You have successfully signed in."
+            : "You have successfully signed up.",
+        );
+
+        router.push("/");
+      } else {
+        toast.error(isSignIn ? "Error signing in." : "Error signing up.");
+      }
+    } catch (error) {
+      console.log("Submission error:", error);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,9 +104,9 @@ const AuthForm = <T extends FieldValues>({
                   <FormControl>
                     {field.name === "universityCard" ? (
                       <FileUpload
-                        type="image"
+                        type="ID"
                         accept="image/*"
-                        placeholder="Upload your ID"
+                        placeholder={`Upload your ID\nFor test users please upload any \nimage file with size less than 50KB`}
                         folder="ids"
                         variant="dark"
                         onFileChange={field.onChange}
@@ -116,8 +128,20 @@ const AuthForm = <T extends FieldValues>({
             />
           ))}
 
-          <Button type="submit" className="form-btn">
-            {isSignIn ? "Sign In" : "Sign Up"}
+          <Button
+            type="submit"
+            className="form-btn"
+            disabled={isLoading}
+            formNoValidate={true}
+            variant="default"
+          >
+            {isSignIn
+              ? isLoading
+                ? "Signing In..."
+                : "Sign In"
+              : isLoading
+                ? "Signing Up.."
+                : "Sign Up"}
           </Button>
         </form>
       </Form>
