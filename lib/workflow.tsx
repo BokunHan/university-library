@@ -68,7 +68,7 @@ export const sendEmail = async ({
       break;
 
     case "inactive-30":
-      subject = `Don&apos;t Forget to Check In at BookWise, ${fullName}!`;
+      subject = `Don't Forget to Check In at BookWise, ${fullName}!`;
       component = <InactiveMonthlyEmail fullName={fullName} />;
       break;
 
@@ -88,7 +88,7 @@ export const sendEmail = async ({
       break;
 
     case "borrow":
-      subject = `You&apos;ve Borrowed a Book, ${fullName}!`;
+      subject = `You've Borrowed a Book, ${fullName}!`;
       component = (
         <BorrowEmail
           fullName={fullName}

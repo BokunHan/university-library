@@ -3,6 +3,7 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { CSSProperties, ReactNode, useState } from "react";
 import { VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 type LoaderType = "light" | "dark";
 type ButtonVariantProps = VariantProps<typeof buttonVariants>;
@@ -69,7 +70,11 @@ const DownloadReceipt = ({
     <Button
       onClick={handleDownload}
       disabled={isDownloading}
-      className={className ? className : "book-btn"}
+      className={
+        className
+          ? cn(className, isDownloading && "flex items-center justify-center")
+          : "book-btn"
+      }
       variant={variant}
       style={style}
     >

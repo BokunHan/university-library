@@ -2,7 +2,7 @@
 
 import { db } from "@/database/drizzle";
 import { books, borrowRecords, users } from "@/database/schema";
-import { and, desc, eq, isNotNull, isNull, ne, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import { BorrowRequest, BorrowStatus } from "@/types";
 import dayjs from "dayjs";
 import { sendEmail } from "@/lib/workflow";
@@ -116,15 +116,19 @@ export const changeStatus = async (
           .select({
             email: users.email,
             fullName: users.fullName,
+            title: books.title,
           })
           .from(borrowRecords)
-          .innerJoin(users, eq(borrowRecords.userId, users.id));
+          .where(eq(borrowRecords.id, id))
+          .innerJoin(users, eq(borrowRecords.userId, users.id))
+          .innerJoin(books, eq(borrowRecords.bookId, books.id));
 
         if (user.length === 1) {
           await sendEmail({
             email: user[0].email,
             type: "return",
             fullName: user[0].fullName,
+            bookTitle: user[0].title,
           });
         }
       }
