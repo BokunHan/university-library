@@ -129,7 +129,7 @@ const Page = () => {
             />
           ) : (
             <>
-              <section className="flex flex-col w-full my-5">
+              <section className="flex flex-col w-full my-3">
                 <div
                   className={cn(
                     "flex",

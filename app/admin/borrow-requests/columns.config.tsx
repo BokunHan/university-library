@@ -85,6 +85,7 @@ export const getBorrowRequestTableColumns = (
               key={request.id}
               id={request.id}
               className="book-receipt_admin-btn"
+              loaderType="dark"
             >
               <div className="flex justify-center items-center gap-1">
                 <img

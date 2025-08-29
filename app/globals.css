@@ -171,7 +171,7 @@
 
   /* Book List */
   .book-list {
-    @apply mt-6 flex flex-wrap justify-evenly gap-5 xs:gap-20;
+    @apply mt-6 flex flex-wrap justify-evenly gap-3 xs:gap-20;
   }
 
   .similar-books {
