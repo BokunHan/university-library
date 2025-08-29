@@ -171,6 +171,10 @@
 
   /* Book List */
   .book-list {
+    @apply mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 justify-self-center gap-14 lg:gap-20;
+  }
+
+  .borrowed-book-list {
     @apply mt-6 flex flex-wrap justify-evenly gap-3 xs:gap-20;
   }
 

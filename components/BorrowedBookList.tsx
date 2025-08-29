@@ -20,7 +20,7 @@ const BorrowedBookList = ({ title, bookItems, user }: Props) => {
         <div className="flex flex-col items-center sm:items-start">
           <h2 className="text-3xl font-semibold text-light-100">{title}</h2>
 
-          <ul className="book-list justify-center sm:justify-start">
+          <ul className="borrowed-book-list justify-center sm:justify-start">
             {bookItems.map((item, i) => (
               <BorrowedBookCard
                 key={i}
