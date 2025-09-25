@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import { Toaster } from "react-hot-toast";
 import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const ibmPlexSans = localFont({
   src: [
@@ -53,6 +54,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
           className={`${ibmPlexSans.className} ${bebasNeue.variable} ${roboto.variable} antialiased`}
         >
           {children}
+          <SpeedInsights />
           <Toaster position="bottom-right" />
         </body>
       </SessionProvider>
