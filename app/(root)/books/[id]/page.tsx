@@ -1,7 +1,7 @@
 import { db } from "@/database/drizzle";
 import React from "react";
-import { books } from "@/database/schema";
-import { eq } from "drizzle-orm";
+import { books, borrowRecords, users } from "@/database/schema";
+import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import BookOverview from "@/components/BookOverview";
 import { auth } from "@/auth";
@@ -11,17 +11,25 @@ import Link from "next/link";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
-  const session = await auth();
 
-  const [bookDetails] = await db
+  const sessionPromise = auth();
+  const bookDetailsPromise = db
     .select()
     .from(books)
     .where(eq(books.id, id))
     .limit(1);
 
+  const [session, [bookDetails]] = await Promise.all([
+    sessionPromise,
+    bookDetailsPromise,
+  ]);
+
+  if (!session?.user?.id) return;
+  const userId = session.user.id;
+
   if (!bookDetails) redirect("/404");
 
-  const similarBooks = await db
+  const similarBooksPromise = db
     .select({
       id: books.id,
       coverColor: books.coverColor,
@@ -31,9 +39,36 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     .where(eq(books.genre, bookDetails.genre))
     .limit(6);
 
+  const userPromise = db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  const recordPromise = db
+    .select()
+    .from(borrowRecords)
+    .where(
+      and(
+        eq(borrowRecords.userId, userId),
+        eq(borrowRecords.bookId, id),
+        eq(borrowRecords.status, "Borrowed"),
+      ),
+    );
+
+  const [similarBooks, [user], record] = await Promise.all([
+    similarBooksPromise,
+    userPromise,
+    recordPromise,
+  ]);
+
   return (
     <>
-      <BookOverview {...bookDetails} userId={session?.user?.id as string} />
+      <BookOverview
+        book={bookDetails}
+        user={user}
+        recordId={record[0]?.id || ""}
+      />
 
       <div className="book-details">
         <div className="flex-[1.3]">

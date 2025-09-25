@@ -22,7 +22,7 @@ const Header = ({
   return (
     <header className="my-10 flex items-center justify-between gap-5 w-full">
       <div className="flex gap-3 items-center">
-        <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
+        <Image src="/icons/logo.svg" alt="logo" width={40} height={32} />
         <p className="text-[28px] text-white font-semibold hidden lg:block">
           BookWise
         </p>

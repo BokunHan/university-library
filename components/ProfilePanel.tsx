@@ -35,8 +35,8 @@ const ProfilePanel = ({ user }: { user: User }) => {
                 <Image
                   src="/icons/verified.svg"
                   alt="verified"
-                  width={16}
-                  height={16}
+                  width={18}
+                  height={18}
                 />
                 <p className="text-sm text-light-100">Verified Student</p>
               </div>
@@ -64,6 +64,8 @@ const ProfilePanel = ({ user }: { user: User }) => {
             alt="student-card"
             width={486}
             height={287}
+            priority
+            fetchPriority="high"
             className="w-full h-full object-cover object-center"
           />
         </div>

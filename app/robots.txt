@@ -1,0 +1,11 @@
+# Allow all crawlers to access the site by default
+User-agent: *
+Allow: /
+
+# Block crawlers from accessing specific areas
+Disallow: /admin/
+Disallow: /my-profile/
+Disallow: /sign-in/
+Disallow: /sign-up/
+Disallow: /api/
+Disallow: /too-fast/

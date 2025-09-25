@@ -4,6 +4,7 @@ import { db } from "@/database/drizzle";
 import { books } from "@/database/schema";
 import { desc, eq } from "drizzle-orm";
 import { BookParams } from "@/types";
+import { revalidateTag } from "next/cache";
 
 export const createBook = async (params: BookParams) => {
   try {
@@ -14,6 +15,8 @@ export const createBook = async (params: BookParams) => {
         availableCopies: params.totalCopies,
       })
       .returning();
+
+    revalidateTag("books-collection");
 
     return {
       success: true,

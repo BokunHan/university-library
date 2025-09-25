@@ -1,21 +1,15 @@
 import React from "react";
 import BorrowedBookCard from "@/components/BorrowedBookCard";
-import { BookItem, User } from "@/types";
-import ProfilePanel from "@/components/ProfilePanel";
+import { BookItem } from "@/types";
 
 interface Props {
   title: string;
   bookItems: BookItem[];
-  user: User;
 }
 
-const BorrowedBookList = ({ title, bookItems, user }: Props) => {
+const BorrowedBookList = ({ title, bookItems }: Props) => {
   return (
     <section className="flex flex-col xl:flex-row gap-20">
-      <div className="w-1/2">
-        <ProfilePanel user={user} />
-      </div>
-
       {bookItems.length > 0 && (
         <div className="flex flex-col items-center sm:items-start">
           <h2 className="text-3xl font-semibold text-light-100">{title}</h2>

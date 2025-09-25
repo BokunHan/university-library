@@ -1,90 +1,107 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import BookCard from "@/components/BookCard";
 import { Book } from "@/types";
 import { useDebounce } from "@/lib/useDebounce";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Pagination } from "@/components/Pagination";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const Pagination = dynamic(() =>
+  import("@/components/Pagination").then((mod) => mod.Pagination),
+);
 
 const Page = () => {
-  const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const debouncedQuery = useDebounce(query, 300);
+  const [results, setResults] = useState<Book[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [filters, setFilters] = useState<string[]>(["All"]);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [allBooks, setAllBooks] = useState<Book[]>([]);
-  const [filters, setFilters] = useState<string[]>(["All"]);
+  // --- Hooks for managing URL state ---
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const [results, setResults] = useState<Book[]>([]);
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const limit = 12;
+  const query = searchParams.get("q") || "";
+  const activeFilter = searchParams.get("genre") || "All";
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const debouncedQuery = useDebounce(query, 300);
 
+  // --- Function to update URL state ---
+  const setUrlState = useCallback(
+    (name: string, value: string | number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, String(value));
+      // Reset page to 1 when query or filter changes
+      if (name !== "page") {
+        params.set("page", "1");
+      }
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [searchParams, pathname, router],
+  );
+
+  // --- The main data-fetching effect ---
   useEffect(() => {
+    // AbortController to cancel stale requests
+    const controller = new AbortController();
+
     const fetchBooks = async () => {
-      if (debouncedQuery) {
-        setIsLoading(true);
-        const response = await fetch(`/api/search?q=${debouncedQuery}`);
+      if (!debouncedQuery) {
+        setResults([]);
+        setTotalPages(0);
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        const params = new URLSearchParams({
+          q: debouncedQuery,
+          genre: activeFilter,
+          page: String(currentPage),
+          limit: "12",
+        });
+
+        const response = await fetch(`/api/search?${params.toString()}`, {
+          signal: controller.signal, // Pass the signal to fetch
+        });
         const data = await response.json();
 
-        setAllBooks(data);
-        setCurrentPage(1);
-        setActiveFilter("All");
+        setResults(data.data);
+        setTotalPages(data.totalPages);
 
+        // This is just a placeholder, a real implementation would
+        // fetch genres from a separate, cached endpoint.
+        if (currentPage === 1 && activeFilter === "All") {
+          const distinctGenres = [
+            "All",
+            ...new Set(data.data.map((book: Book) => book.genre)),
+          ];
+          setFilters(distinctGenres as string[]);
+        }
+      } catch (error) {
+        // Ignore abort errors
+        if ((error as Error).name !== "AbortError") {
+          console.error("Failed to fetch search results:", error);
+        }
+      } finally {
         setIsLoading(false);
-      } else {
-        setAllBooks([]);
       }
     };
 
     fetchBooks();
-  }, [debouncedQuery]);
 
-  useEffect(() => {
-    if (allBooks.length > 0) {
-      // 1. Extract distinct genres for the filter dropdown
-      const distinctGenres = [
-        "All",
-        ...new Set(allBooks.map((book) => book.genre)),
-      ];
-      setFilters(distinctGenres);
-
-      // 2. Apply the active filter
-      const filteredBooks =
-        activeFilter === "All"
-          ? allBooks
-          : allBooks.filter((book) => book.genre === activeFilter);
-
-      // 3. Calculate total pages based on the filtered list
-      setTotalPages(Math.ceil(filteredBooks.length / limit));
-
-      // 4. Apply pagination to get the books for the current page
-      const offset = (currentPage - 1) * limit;
-      const paginatedBooks = filteredBooks.slice(offset, offset + limit);
-      setResults(paginatedBooks);
-    } else {
-      // Clear everything if there are no books
-      setResults([]);
-      setTotalPages(0);
-      setFilters(["All"]);
-    }
-  }, [allBooks, currentPage, activeFilter]);
-
-  const handleFilterChange = (filter: string) => {
-    setActiveFilter(filter);
-    setCurrentPage(1);
-  };
+    // Cleanup function to abort the fetch on re-run
+    return () => controller.abort();
+  }, [debouncedQuery, currentPage, activeFilter]);
 
   const handleClear = () => {
-    setQuery("");
-    setResults([]);
-    setActiveFilter("All");
-    setCurrentPage(1);
-    setTotalPages(0);
+    router.push(pathname);
     searchInputRef.current?.focus();
   };
 
@@ -112,7 +129,7 @@ const Page = () => {
             value={query}
             onChange={(e) => {
               setIsLoading(true);
-              setQuery(e.target.value);
+              setUrlState("q", e.target.value);
             }}
             ref={searchInputRef}
             autoFocus={true}
@@ -124,6 +141,7 @@ const Page = () => {
         <>
           {isLoading ? (
             <img
+              alt="loading"
               src="/icons/admin/loader.svg"
               className="size-10 animate-spin"
             />
@@ -151,7 +169,7 @@ const Page = () => {
                       <p className="text-base text-light-100">Filter by:</p>
                       <select
                         value={activeFilter}
-                        onChange={(e) => handleFilterChange(e.target.value)}
+                        onChange={(e) => setUrlState("genre", e.target.value)}
                         className="select-trigger"
                       >
                         {filters.map((filter) => (
@@ -182,7 +200,7 @@ const Page = () => {
                       <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}
-                        onPageChange={setCurrentPage}
+                        onPageChange={(page) => setUrlState("page", page)}
                       />
                     )}
                   </>

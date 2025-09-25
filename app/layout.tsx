@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import { Roboto } from "next/font/google";
 import { ReactNode } from "react";
 import { Toaster } from "react-hot-toast";
-import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import { registerLicense } from "@syncfusion/ej2-base";
-import "@syncfusion/ej2-base/styles/material.css";
-import "@syncfusion/ej2-react-grids/styles/material.css";
-import "@syncfusion/ej2-react-buttons/styles/material.css";
-import "@syncfusion/ej2-react-popups/styles/material.css";
-import "@syncfusion/ej2-buttons/styles/material.css";
-import "@syncfusion/ej2-popups/styles/material.css";
-import "@syncfusion/ej2-splitbuttons/styles/material.css";
-
-registerLicense(process.env.NEXT_SYNCFUSION_LICENSE_KEY!);
+import { SessionProvider } from "next-auth/react";
 
 const ibmPlexSans = localFont({
   src: [
@@ -32,6 +23,13 @@ const bebasNeue = localFont({
   variable: "--bebas-neue",
 });
 
+const roboto = Roboto({
+  weight: ["400", "500", "700"], // The weights from your Lighthouse report
+  subsets: ["latin"],
+  display: "swap", // Best practice for performance
+  variable: "--roboto", // Assign it to a CSS variable
+});
+
 export const metadata: Metadata = {
   title: "BookWise",
   description: "BookWise is a book borrowing library management solution.",
@@ -43,8 +41,16 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <SessionProvider session={session}>
+        <head>
+          {/* ADDED: Preconnect to your ImageKit CDN */}
+          <link
+            rel="preconnect"
+            href="https://ik.imagekit.io"
+            crossOrigin="anonymous"
+          />
+        </head>
         <body
-          className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
+          className={`${ibmPlexSans.className} ${bebasNeue.variable} ${roboto.variable} antialiased`}
         >
           {children}
           <Toaster position="bottom-right" />

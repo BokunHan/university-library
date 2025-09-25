@@ -7,52 +7,48 @@ import BorrowedBookList from "@/components/BorrowedBookList";
 import { calculateDaysLeft } from "@/lib/utils";
 import { BookItem } from "@/types";
 import dayjs from "dayjs";
+import ProfilePanel from "@/components/ProfilePanel";
 
 const Page = async () => {
   const session = await auth();
-  if (!session || !session.user) return null;
-  const borrowedBookInfo = await db
-    .select({
-      recordId: borrowRecords.id,
-      bookId: borrowRecords.bookId,
-      borrowDate: borrowRecords.borrowDate,
-      dueDate: borrowRecords.dueDate,
-    })
-    .from(borrowRecords)
-    .where(eq(borrowRecords.userId, session.user.id as string))
-    .orderBy(desc(borrowRecords.borrowDate));
+  if (!session || !session.user || !session.user.id) return null;
+  const userId = session.user.id;
 
-  const BookItems = [];
+  const userPromise = db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
 
-  for (const info of borrowedBookInfo) {
-    const borrowedBook = await db
-      .select()
-      .from(books)
-      .where(eq(books.id, info.bookId))
-      .limit(1);
+  const borrowedItemsPromise = db.query.borrowRecords.findMany({
+    where: eq(borrowRecords.userId, userId),
+    orderBy: desc(borrowRecords.borrowDate),
+    with: {
+      book: true, // This tells Drizzle to JOIN and include the full book object
+    },
+  });
 
-    BookItems.push({
-      book: borrowedBook[0],
-      recordId: info.recordId,
-      borrowDate: dayjs(info.borrowDate).format("MMM DD, YYYY"),
-      daysLeft: calculateDaysLeft(info.dueDate),
-    } as BookItem);
-  }
+  const [user, borrowedItems] = await Promise.all([
+    userPromise,
+    borrowedItemsPromise,
+  ]);
 
-  const user = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, session.user.id as string))
-    .limit(1);
+  if (!user) return null;
+
+  const bookItems: BookItem[] = borrowedItems.map((item) => ({
+    // The book object is already attached, no extra query needed
+    book: item.book,
+    recordId: item.id,
+    borrowDate: dayjs(item.borrowDate).format("MMM DD, YYYY"),
+    daysLeft: calculateDaysLeft(item.dueDate),
+  }));
 
   return (
-    <>
-      <BorrowedBookList
-        title="Borrowed Books"
-        bookItems={BookItems}
-        user={user[0]}
-      />
-    </>
+    <section className="flex flex-col xl:flex-row gap-20">
+      <div className="w-1/2">
+        <ProfilePanel user={user} />
+      </div>
+
+      <BorrowedBookList title="Borrowed Books" bookItems={bookItems} />
+    </section>
   );
 };
 export default Page;
